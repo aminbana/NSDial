@@ -101,7 +101,7 @@ class ReasonEngine(nn.Module):
         return all_depths_tokens_trees, all_depths_scores
 
     def save_trees(self, all_depths_tokens_trees, all_depths_scores):
-        fout = open('/home/shiquan/Projects/DialogueReasoning/outputs/multiwoz_output_proof_trees.json', 'w')
+        fout = open('outputs/multiwoz_output_proof_trees.json', 'w')
         tree_dict = {}
         for bt, batch_tokens in enumerate(all_depths_tokens_trees):
             if bt not in tree_dict:
