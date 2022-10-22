@@ -10,4 +10,5 @@
 #SBATCH --output=/project/rostamim_919/aminbana/R-%x.%j.out
 
 nvidia-smi
+
 python train.py -ds=kvr -bsz=8 -hdd=128 -lr=0.001 -dr=0.2 -evalp=10 -max_neg_cnt=5 -max_depth=3
