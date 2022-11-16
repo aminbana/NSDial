@@ -12,7 +12,7 @@ if (os.cpu_count() > 8):
 else:
     USE_CUDA = False
 MAX_LENGTH = 10
-
+print ("USE CUDA:", USE_CUDA)
 parser = argparse.ArgumentParser(description='Seq_TO_Seq Dialogue bAbI')
 parser.add_argument('-ds','--dataset', help='dataset, babi or kvr', required=False, default='reasoning')
 parser.add_argument('-t','--task', help='Task Number', required=False, default="")
