@@ -43,6 +43,7 @@ class LTHR(nn.Module):
                 self.question_generator = torch.load(str(path)+'/question_generator.th',lambda storage, loc: storage)
                 self.reasoner = torch.load(str(path)+'/reasoner.th',lambda storage, loc: storage)
                 self.decoder = torch.load(str(path)+'/decoder.th',lambda storage, loc: storage)
+            print ("Loaded pretrained version, last epoch:", self.last_epoch)
         else:
             self.encoder = Encoder(lang.n_words,
                                    hidden_size,
