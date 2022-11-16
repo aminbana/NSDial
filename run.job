@@ -5,10 +5,15 @@
 #SBATCH --mem=24GB
 #SBATCH --time=1:00:00
 #SBATCH --partition=gpu 
-#SBATCH --gres=gpu:v100:1
+#SBATCH --gres=gpu:p100:1
 #SBATCH --account=rostamim_919
 #SBATCH --output=/project/rostamim_919/aminbana/R-%x.%j.out
 
+#! cat /proc/cpuinfo
+
 nvidia-smi
 
-python train.py -ds=kvr -bsz=8 -hdd=128 -lr=0.001 -dr=0.2 -evalp=10 -max_neg_cnt=5 -max_depth=3
+echo "continuing save/LTHR-DialogueReasoningSMD/HDD128BSZ8lr0.001BLEU-11.99"
+
+python train.py -ds=kvr -bsz=8 -hdd=128 -lr=0.001 -dr=0.2 -evalp=10 -max_neg_cnt=5 -max_depth=3 -path save/LTHR-DialogueReasoningSMD/HDD128BSZ8lr0.001BLEU-11.99
+#python train.py -ds=multiwoz -bsz=8 -hdd=128 -lr=0.001 -dr=0.2 -evalp=10 -max_neg_cnt=5 -max_depth=3

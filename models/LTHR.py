@@ -70,6 +70,15 @@ class LTHR(nn.Module):
         self.criterion_bce = nn.BCELoss()
         self.reset()
 
+        encoder_params = sum(p.numel() for p in self.encoder.parameters())
+        question_generator_params = sum(p.numel() for p in self.question_generator.parameters())
+        reasoner_params = sum(p.numel() for p in self.reasoner.parameters())
+        decoder_params = sum(p.numel() for p in self.decoder.parameters())
+
+        print ("----------- Number of Parameters:", "encoder_params:", encoder_params, "question_generator_params:", question_generator_params, "reasoner_params:", reasoner_params, "decoder_params:", decoder_params)
+
+
+
         if USE_CUDA:
             self.encoder.cuda()
             self.question_generator.cuda()
