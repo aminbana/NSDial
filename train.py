@@ -37,7 +37,11 @@ model = LTHR(
     args['path'],
     float(args['drop']),
     relations_cnt=lang.n_relations,
-    entities_cnt=lang.n_entities)
+    entities_cnt=lang.n_entities,
+    ablation_soft_switch = args['ab_softswitch'],
+    ablation_HRE = args['ab_HRE'],
+    ablation_HG = args['ab_HG'],
+    ablation_argmax = False)
 
 for epoch in range(200):
     print("Epoch:{}".format(epoch))
