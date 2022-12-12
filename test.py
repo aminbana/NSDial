@@ -38,6 +38,11 @@ model = LTHR(
 	args['path'],
     float(args['drop']),
     relations_cnt=lang.n_relations,
-    entities_cnt=lang.n_entities)
+    entities_cnt=lang.n_entities,
+    ablation_soft_switch = args['ab_softswitch'],
+    ablation_HRE = args['ab_HRE'],
+    ablation_HG = args['ab_HG'],
+    ablation_argmax = args['ab_gumbel']
+)
 
 acc_test = model.evaluate(test, 1e7)

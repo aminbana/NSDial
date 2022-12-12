@@ -16,7 +16,7 @@ from utils.utils_general import _cuda
 
 
 class LTHR(nn.Module):
-    def __init__(self, lang, emb_size, hidden_size, max_depth, lr, path, dropout, relations_cnt, entities_cnt):
+    def __init__(self, lang, emb_size, hidden_size, max_depth, lr, path, dropout, relations_cnt, entities_cnt, ablation_soft_switch = False, ablation_HRE = False, ablation_HG = False, ablation_argmax = False):
         super(LTHR, self).__init__()
         self.name = "LTHR"
 
@@ -29,6 +29,11 @@ class LTHR(nn.Module):
         self.lr = lr
         self.input_size = lang.n_words
         self.dropout = dropout
+
+        self.ablation_soft_switch = ablation_soft_switch
+        self.ablation_HRE = ablation_HRE
+        self.ablation_HG = ablation_HG
+        self.ablation_argmax = ablation_argmax
 
         if path:
             if USE_CUDA:
@@ -311,7 +316,11 @@ class LTHR(nn.Module):
                 candidates_prob_global,
                 conv_arr_plain,
                 response_plain,
-                kb_arr_plain)
+                kb_arr_plain,
+                self.ablation_soft_switch,
+                self.ablation_HRE,
+                self.ablation_HG,
+                self.ablation_argmax)
 
             decoded_coarse = np.transpose(decoded_coarse)
             decoded_fine = np.transpose(decoded_fine)

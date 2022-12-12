@@ -45,17 +45,17 @@ class MultiTaskQuestionGeneratorForDecoder(nn.Module):
         """Get cell states and hidden states."""
         return _cuda(torch.zeros(2, bsz, self.hidden_size))
 
-    def forward(self, context_arr, context_arr_lengths, hidden, global_pointer, is_decoding):
+    def forward(self, context_arr, context_arr_lengths, hidden, global_pointer, is_decoding, use_hard_max = False):
         # Shared Layer
         hidden = self.W(hidden).unsqueeze(0)
 
         # Task-specific Heads
         # - StructureTypePredictor Head
-        structure_type_logits, structure_type_action, structure_type_loss = self.compute_structure_type(hidden.squeeze(0))
+        structure_type_logits, structure_type_action, structure_type_loss = self.compute_structure_type(hidden.squeeze(0), use_hard_max)
 
         # - QueryContentPredictor Head
         query_entity_h_logits, query_entity_h_action, query_entity_h_loss, \
-            query_entity_t_logits, query_entity_t_action, query_entity_t_loss = self.compute_query_entities(hidden.squeeze(0))
+            query_entity_t_logits, query_entity_t_action, query_entity_t_loss = self.compute_query_entities(hidden.squeeze(0), use_hard_max)
 
         # - CandidatesPredictor Head
         candidates_prob, candidates_prob_logits = self.compute_candidates_probability(context_arr, context_arr_lengths, hidden.squeeze(0), global_pointer, is_decoding)
@@ -68,22 +68,37 @@ class MultiTaskQuestionGeneratorForDecoder(nn.Module):
         scores_ = cond.matmul(seq.transpose(1,0))
         return scores_
 
-    def compute_structure_type(self, hidden):
+    def compute_structure_type(self, hidden, use_hard_max = False):
         sp_h = self.W1(hidden)  # [batch_size, 2]
         # sample an action
-        sp_h_action = torch.nn.functional.gumbel_softmax(logits=sp_h, tau=1.0, hard=True)
+        if use_hard_max:
+            pred = torch.argmax(sp_h, dim=1)
+            sp_h_action = torch.zeros_like(sp_h).scatter_(1, pred.unsqueeze(1), 1.)
+        else:
+            sp_h_action = torch.nn.functional.gumbel_softmax(logits=sp_h, tau=1.0, hard=True)
+
         loss = None
         return sp_h, sp_h_action, loss
 
-    def compute_query_entities(self, hidden):
+    def compute_query_entities(self, hidden, use_hard_max = False):
         query_entity_h = self.W3(hidden)  # [batch_size, nb_entities]
         # sample an action
-        query_entity_h_action = torch.nn.functional.gumbel_softmax(logits=query_entity_h, tau=1.0, hard=True)
+        if use_hard_max:
+            pred = torch.argmax(query_entity_h, dim=1)
+            query_entity_h_action = torch.zeros_like(query_entity_h).scatter_(1, pred.unsqueeze(1), 1.)
+        else:
+            query_entity_h_action = torch.nn.functional.gumbel_softmax(logits=query_entity_h, tau=1.0, hard=True)
+
         query_entity_h_loss = None
 
         query_entity_t = self.W4(hidden)  # [batch_size, nb_relations]
         # sample an action
-        query_entity_t_action = torch.nn.functional.gumbel_softmax(logits=query_entity_t, tau=1.0, hard=True)
+        if use_hard_max:
+            pred = torch.argmax(query_entity_t, dim=1)
+            query_entity_t_action = torch.zeros_like(query_entity_t).scatter_(1, pred.unsqueeze(1), 1.)
+        else:
+            query_entity_t_action = torch.nn.functional.gumbel_softmax(logits=query_entity_t, tau=1.0, hard=True)
+
         query_entity_t_loss = None
 
         return query_entity_h, query_entity_h_action, query_entity_h_loss, query_entity_t, query_entity_t_action, query_entity_t_loss

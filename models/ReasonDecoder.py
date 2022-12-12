@@ -18,7 +18,9 @@ class ReasonDecoder(nn.Module):
         self.relu = nn.ReLU()
         self.projector = nn.Linear(embedding_dim, embedding_dim)
 
-    def forward(self, encode_hidden, question_generator, reasoner, target_batches, max_target_length, batch_size, use_teacher_forcing, get_decoded_words, context_arr, context_arr_lengths, facts_arr, ent_index, global_pointer, conv_arr_plain, response_plain, kb_arr_plain):
+
+    def forward(self, encode_hidden, question_generator, reasoner, target_batches, max_target_length, batch_size, use_teacher_forcing, get_decoded_words, context_arr, context_arr_lengths, facts_arr, ent_index, global_pointer, conv_arr_plain, response_plain, kb_arr_plain,
+                ablation_soft_switch = False, ablation_HRE = False, ablation_HG = False, ablation_argmax = False):
         # Initialize variables for vocab and pointer
         all_decoder_outputs_vocab = _cuda(torch.zeros(max_target_length, batch_size, self.num_vocab))
         all_candidate_prob = _cuda(torch.zeros(max_target_length, batch_size, context_arr.shape[1]))
@@ -45,7 +47,7 @@ class ReasonDecoder(nn.Module):
             # query question generator and reasoner using hidden state
             structure_type_logits, structure_type_action, structure_type_loss, \
             query_entity_h_logits, query_entity_h_action, query_entity_h_loss, \
-            query_entity_t_logits, query_entity_t_action, query_entity_t_loss, candidates_prob, candidates_prob_logits = question_generator(context_arr, context_arr_lengths, hidden.squeeze(0), global_pointer, True)
+            query_entity_t_logits, query_entity_t_action, query_entity_t_loss, candidates_prob, candidates_prob_logits = question_generator(context_arr, context_arr_lengths, hidden.squeeze(0), global_pointer, True, ablation_argmax)
             all_candidate_prob[t] = candidates_prob_logits
 
             question_arr, structure_type_action, pos = self.decode_questions(structure_type_action, query_entity_h_action,
@@ -68,12 +70,19 @@ class ReasonDecoder(nn.Module):
             # 2.Get reasoning outputs
             extracted_entities = self.extract_max_confidence_conclusions(question_arr_id, structure_type_action, batch_size)  # [batch_size * (max_neg_cnt+1)]
 
+
+
             if use_teacher_forcing:
                 decoder_input = target_batches[:, t]
             else:
                 decoder_input = topvi.squeeze()
 
             if get_decoded_words:
+
+                if not ablation_HRE:
+                    a, b = torch.sort(scores, -1, descending=False)
+                    extracted_entities = torch.stack([j[i] for i, j in zip(b, extracted_entities)])
+
                 search_len = args['max_neg_cnt']+1
                 temp_f, temp_c = [], []
                 for bi in range(batch_size):
@@ -91,6 +100,14 @@ class ReasonDecoder(nn.Module):
                             memory_mask_for_step[bi, int(pos[bi, i].item())] = 0
                     else:
                         temp_f.append(self.lang.index2word[token])
+                    if ablation_soft_switch:
+                        if torch.rand(1).item() > 0.5:
+                            temp_f[-1] = temp_c[-1]
+
+                if ablation_HG:
+                    temp_f = temp_c
+
+
                 decoded_fine.append(temp_f)
                 decoded_coarse.append(temp_c)
 

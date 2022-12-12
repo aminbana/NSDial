@@ -10,7 +10,7 @@ UNK_token = 0
 if (os.cpu_count() > 8):
     USE_CUDA = True
 else:
-    USE_CUDA = False
+    USE_CUDA = True
 MAX_LENGTH = 10
 print ("USE CUDA:", USE_CUDA)
 parser = argparse.ArgumentParser(description='Seq_TO_Seq Dialogue bAbI')
@@ -50,6 +50,12 @@ parser.add_argument('-graph_layer', '--graph_layer', help='graph layer number', 
 parser.add_argument('-max_depth', '--max_depth', help='max search depth of proof tree', type=int, required=False, default=2)
 parser.add_argument('-max_neg_cnt', '--max_neg_cnt', help='max negative conclusions count', type=int, required=False, default=2)
 parser.add_argument('-show_trees', '--show_trees', help='for visualizing proof trees', type=int, required=False, default=0)
+
+parser.add_argument('-ab_softswitch', '--ab_softswitch', help='ablation on softswitch', type=int, required=False, default=0)
+parser.add_argument('-ab_HRE', '--ab_HRE', help='ablation on HRE', type=int, required=False, default=0)
+parser.add_argument('-ab_HG', '--ab_HG', help='ablation on HG', type=int, required=False, default=0)
+parser.add_argument('-ab_gumbel', '--ab_gumbel', help='ablation on gumbel', type=int, required=False, default=0)
+
 
 args = vars(parser.parse_args())
 print(str(args))
