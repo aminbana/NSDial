@@ -90,19 +90,6 @@ class ReasonDecoder(nn.Module):
                 if ablation_soft_switch:
                     extracted_entities = extracted_entities_random if torch.rand(1).item() > 0.5 else extracted_entities_sorted
 
-
-                if ablation_HG:
-
-
-
-
-                    extracted_entities = torch.stack([j[i] for i, j in zip(b, extracted_entities)])
-                if ablation_soft_switch:
-                    pass
-
-
-
-
                 search_len = args['max_neg_cnt']+1
                 temp_f, temp_c = [], []
                 for bi in range(batch_size):
@@ -121,7 +108,7 @@ class ReasonDecoder(nn.Module):
                     else:
                         temp_f.append(self.lang.index2word[token])
                     if ablation_HG:
-                        if torch.rand(1).item() > 0.7:
+                        if torch.rand(1).item() > 0.5:
                             temp_f[-1] = temp_c[-1]
 
 
