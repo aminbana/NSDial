@@ -1,7 +1,7 @@
 # NS-Dial
 
 This is the code repository for the paper:
-**An Interpretable Neuro-Symbolic Framework for Task-Oriented Dialogue Generation**. ***ACL 2022***. 
+**Reproduction repo for "An Interpretable Neuro-Symbolic Framework for Task-Oriented Dialogue Generation"**. ***ACL 2022***. 
 
 
 ## Framework
@@ -20,6 +20,7 @@ This is the code repository for the paper:
 * numpy 1.19.2
 * python 3.6.10
 
+By downloading this repo and following the training instructions, the codes, data and pretrained models are automatically downloaded.
 
 ## Training
 We created `train.py` to train the models. For SMD dataset, you can run:
@@ -42,3 +43,9 @@ For MultiWOZ 2.1 dataset, you can run:
 ```console
 python test.py -path=<path_to_saved_model> -ds=multiwoz -lr=0.001 -dr=0.2 -max_depth=3
 ```
+
+One trained model for each dataset is also stored in this repo. You can train your own model using train.py, or test the trained models under save folder by setting "-path" argument. For example, to test the model trained on MultiWOZ, use "-path=save/LTHR-DialogueReasoningMultiWOZ".
+
+## Ablation
+
+For further ablation studies not presented in original repo, you can add "-ab_softswitch=1", "-ab_HRE=1", "-ab_gumbel=1" for the soft-switch ablation, HRE ablation and gumbel softmax replacement respectively (only use on of the tree for each run).
