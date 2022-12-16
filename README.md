@@ -44,7 +44,7 @@ For MultiWOZ 2.1 dataset, you can run:
 python test.py -path=<path_to_saved_model> -ds=multiwoz -lr=0.001 -dr=0.2 -max_depth=3
 ```
 
-One trained model for each dataset is also stored in this repo. You can train your own model using train.py, or test the trained models under save folder by setting "-path" argument. For example, to test the model trained on MultiWOZ, use "-path=save/LTHR-DialogueReasoningMultiWOZ".
+One trained model for each dataset is also stored in this repo. You can train your own model using train.py, or test the trained models under save folder by setting "-path" argument. For example, to test the model trained on MultiWOZ, use "-path=save/LTHR-DialogueReasoningMultiWOZ/HDD128BSZ8lr0.001".
 
 ## Ablation
 
